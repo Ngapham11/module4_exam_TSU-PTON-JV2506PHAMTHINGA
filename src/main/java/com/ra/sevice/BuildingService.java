@@ -16,8 +16,8 @@ public class BuildingService {
     private BuildingRepository buildingRepository;
     @Autowired
     private UploadFileService uploadFileService;
-    public Page<BuildingResponseDto> findAllAndSearch(Pageable pageable,String searchName,String searchStatus) {
-        Page<BuildingDB> buildingDBPage=buildingRepository.findAll(pageable);
+    public Page<BuildingResponseDto> findAllAndSearch(String searchName,String searchStatus,Pageable pageable) {
+        Page<BuildingDB> buildingDBPage=buildingRepository.findAllAndSearch(searchName,searchStatus,pageable);
         return buildingDBPage.map(this::convertToBuildingResponse);
     }
     public BuildingResponseDto save(BuildingRequestDto buildingRequestDto) {

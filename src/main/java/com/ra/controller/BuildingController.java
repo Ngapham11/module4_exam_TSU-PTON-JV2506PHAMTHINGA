@@ -25,7 +25,7 @@ public class BuildingController {
                                                                                     @RequestParam(name = "searchName",defaultValue = "")String searchName,
                                                                                     @RequestParam(name = "searchStatus",required = false)String searchStatus,
                                                                                     Pageable pageable) {
-       Page<BuildingResponseDto> pages=buildingService.findAllAndSearch(PageRequest.of(page,size),searchName,searchStatus);
+       Page<BuildingResponseDto> pages=buildingService.findAllAndSearch(searchName,searchStatus,PageRequest.of(page,size));
        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.<Page<BuildingResponseDto>>builder()
                        .message("success")
                        .status(HttpStatus.OK.value())
