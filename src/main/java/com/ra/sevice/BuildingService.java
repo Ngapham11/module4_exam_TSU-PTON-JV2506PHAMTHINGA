@@ -29,6 +29,25 @@ public class BuildingService {
         BuildingDB buildingDB=convertToEntity(buildingRequestDto);
         return convertToBuildingResponse(buildingRepository.save(buildingDB));
     }
+    public BuildingResponseDto update(BuildingRequestDto buildingRequestDto,int id) {
+        BuildingDB buildingDB=findBuildingById(id);
+        if (buildingDB==null){
+            throw new CustomException("building not found");
+        }
+        if (buildingRequestDto.getDesign()==null||buildingRequestDto.getDesign().isEmpty()){
+            throw new CustomException("design cannot be empty or null");
+        }
+        buildingDB.setDesign(uploadFileService.uploadFile(buildingRequestDto.getDesign()));
+        buildingDB.setBuildingName(buildingRequestDto.getBuildingName());
+        buildingDB.setStatus(buildingRequestDto.getStatus());
+         buildingDB.setArea(buildingRequestDto.getArea());
+         buildingDB.setAreaUnit(buildingRequestDto.getAreaUnit());
+         buildingDB.setStartDate(buildingRequestDto.getStartDate());
+         buildingDB.setStatus(buildingRequestDto.getStatus());
+         buildingDB.setTime(buildingRequestDto.getTime());
+         buildingDB.setTimeUnit(buildingRequestDto.getTimeUnit());
+         return convertToBuildingResponse(buildingRepository.save(buildingDB));
+    }
     public BuildingDB findBuildingById(int id) {
        return buildingRepository.findById(id).orElseThrow(()->new CustomException("Building not found"));
     }

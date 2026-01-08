@@ -41,4 +41,13 @@ public class BuildingController {
                 .status(HttpStatus.CREATED.value())
                 .build());
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<DataResponse<?>> update(@Valid @ModelAttribute BuildingRequestDto buildingRequestDto, @PathVariable int id) {
+        BuildingResponseDto buildingResponseDto=buildingService.update(buildingRequestDto,id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(DataResponse.builder()
+                .data(buildingResponseDto)
+                .message("update success")
+                .status(HttpStatus.CREATED.value())
+                .build());
+    }
 }
