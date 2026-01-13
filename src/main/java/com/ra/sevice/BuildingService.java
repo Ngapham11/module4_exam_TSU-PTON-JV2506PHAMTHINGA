@@ -4,11 +4,14 @@ import com.ra.exception.CustomException;
 import com.ra.model.dto.request.BuildingRequestDto;
 import com.ra.model.dto.response.BuildingResponseDto;
 import com.ra.model.entity.BuildingDB;
+import com.ra.model.entity.Status;
 import com.ra.repository.BuildingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BuildingService {
@@ -16,7 +19,7 @@ public class BuildingService {
     private BuildingRepository buildingRepository;
     @Autowired
     private UploadFileService uploadFileService;
-    public Page<BuildingResponseDto> findAllAndSearch(String searchName,String searchStatus,Pageable pageable) {
+    public Page<BuildingResponseDto> findAllAndSearch(String searchName, Status searchStatus, Pageable pageable) {
         Page<BuildingDB> buildingDBPage=buildingRepository.findAllAndSearch(searchName,searchStatus,pageable);
         return buildingDBPage.map(this::convertToBuildingResponse);
     }
@@ -80,5 +83,31 @@ public class BuildingService {
                 .content(requestDto.getContent())
                 .status(requestDto.getStatus())
                 .build();
+    }
+    public BuildingResponseDto updateByStatus(int id,Status status) {
+        BuildingDB buildingDB=findBuildingById(id);
+        if (buildingDB==null){
+            throw new CustomException("building not found");
+        }
+        //Nếu trạng thái "hoàn thành" thì không cho update lại trạng thái
+        if (buildingDB.getStatus()==Status.FINISHED){
+            throw new CustomException("Cannot update finished building");
+        }
+        //Lưu vào data base
+        buildingDB.setStatus(status);
+        buildingRepository.save(buildingDB);
+        return BuildingResponseDto.builder()
+        .id(buildingDB.getId())
+        .buildingName(buildingDB.getBuildingName())
+        .area(buildingDB.getArea())
+        .areaUnit(buildingDB.getAreaUnit())
+        .startDate(buildingDB.getStartDate())
+        .time(buildingDB.getTime())
+        .timeUnit(buildingDB.getTimeUnit())
+        .design(buildingDB.getDesign())
+        .content(buildingDB.getContent())
+        .status(buildingDB.getStatus())
+        .build();
+
     }
 }

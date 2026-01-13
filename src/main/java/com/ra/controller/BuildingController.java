@@ -3,6 +3,7 @@ package com.ra.controller;
 import com.ra.model.dto.request.BuildingRequestDto;
 import com.ra.model.dto.response.BuildingResponseDto;
 import com.ra.model.dto.response.DataResponse;
+import com.ra.model.entity.Status;
 import com.ra.sevice.BuildingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class BuildingController {
     public ResponseEntity<DataResponse<Page<BuildingResponseDto>>> findAllAndSearch(@RequestParam(name = "page",defaultValue = "0")int page,
                                                                                     @RequestParam(name = "size",defaultValue = "5")int size,
                                                                                     @RequestParam(name = "searchName",defaultValue = "")String searchName,
-                                                                                    @RequestParam(name = "searchStatus",required = false)String searchStatus,
+                                                                                    @RequestParam(name = "searchStatus",required = false) Status searchStatus,
                                                                                     Pageable pageable) {
        Page<BuildingResponseDto> pages=buildingService.findAllAndSearch(searchName,searchStatus,PageRequest.of(page,size));
        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.<Page<BuildingResponseDto>>builder()
@@ -44,6 +45,16 @@ public class BuildingController {
     @PutMapping("/update/{id}")
     public ResponseEntity<DataResponse<?>> update(@Valid @ModelAttribute BuildingRequestDto buildingRequestDto, @PathVariable int id) {
         BuildingResponseDto buildingResponseDto=buildingService.update(buildingRequestDto,id);
+        return ResponseEntity.status(HttpStatus.OK).body(DataResponse.builder()
+                .data(buildingResponseDto)
+                .message("update success")
+                .status(HttpStatus.OK.value())
+                .build());
+    }
+    //Update một trường thì dùng @PatchMapping
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<DataResponse<?>> updateStatus( @RequestParam Status status, @PathVariable int id) {
+        BuildingResponseDto buildingResponseDto=buildingService.updateByStatus(id, status);
         return ResponseEntity.status(HttpStatus.OK).body(DataResponse.builder()
                 .data(buildingResponseDto)
                 .message("update success")
